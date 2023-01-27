@@ -8,6 +8,7 @@ import 'package:task_manager/screens/team_members/team_members.dart';
 import '../../utils/constants.dart';
 import '../../utils/size_config.dart';
 import '../chatlist_screen/chatlist_screen.dart';
+import '../my_categories/my_categories.dart';
 import '../settings_screen/settings_screen.dart';
 
 class NavigationView extends StatefulWidget {
@@ -37,8 +38,8 @@ class _NavigationViewState extends State<NavigationView> {
     tabPages = [
       const HomeScreen(),
       TeamMembers(),
-      DiscussionsList(),
-      //ChatListScreen(),
+      //DiscussionsList(),
+      TaskCategories(),
       SettingsScreen(),
     ];
     _pageController = PageController(initialPage: _pageIndex);
@@ -96,9 +97,9 @@ class _NavigationViewState extends State<NavigationView> {
             BottomNavigationBarItem(
               icon: Container(
                 margin: EdgeInsets.only(bottom: SizeConfig.blockSizeVertical * 0.7),
-                child: Icon(Icons.chat, size: SizeConfig.blockSizeVertical*3,)
+                child: Icon(Icons.category, size: SizeConfig.blockSizeVertical*3,)
               ),
-              label: 'Discussions'
+              label: 'Category'
             ),
             BottomNavigationBarItem(
               icon: Container(

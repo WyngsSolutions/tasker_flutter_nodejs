@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.task.manager.app">
+    package="com.kv.tasker.app">
 
     <queries>
         <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
     </queries>
 
     <application
-        android:label="Task Manager"
+        android:label="Tasker"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 

@@ -1,9 +1,13 @@
 // ignore_for_file: unused_local_variable
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share/share.dart';
 import 'package:task_manager/screens/delete_account/delete_account.dart';
 import 'package:task_manager/screens/login_screen/login_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/app_user.dart';
 import '../../utils/constants.dart';
 import '../../utils/size_config.dart';
@@ -78,7 +82,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     SizedBox(height: SizeConfig.blockSizeVertical*3,),
                     optionCell(1 ,'Edit Profile', 'assets/edit_profile.png', true, true),
-                    optionCell(2 ,'Contact Support', 'assets/change_password.png', true, true),
+                    optionCell(2 ,'Privacy Policy', 'assets/change_password.png', true, true),
                     optionCell(3 ,'Share App', 'assets/notification2.png', true, true),
                     optionCell(4 ,'Delete account', 'assets/notification2.png', true, true),
                     optionCell(5 ,'Log out', 'assets/logout.png', false, false),
@@ -98,9 +102,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if(optionId == 1)
           Get.to(EditProfile());
         else if(optionId == 2)
-          Get.to(EditProfile());
+          launch('http://wyngslogistics.com/#/policy');
         else if(optionId == 3)
-          Get.to(EditProfile());
+          Share.share('Get KV Review Manager App\n${(Platform.isIOS) ? Constants.iosAppLink : Constants.androidAppLink}');
         else if(optionId == 4)
           Get.to(DeleteAccount());
         else 
@@ -242,7 +246,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical *1.5, left: SizeConfig.blockSizeHorizontal *3, right: SizeConfig.blockSizeHorizontal *3),
                     height: SizeConfig.blockSizeVertical*6,
                     decoration: BoxDecoration(
-                      color: Color(0XFFF0EFFF),
+                      //color: Color(0XFFF0EFFF),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Center(

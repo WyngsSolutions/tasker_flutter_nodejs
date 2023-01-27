@@ -5,9 +5,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:task_manager/controllers/app_controller.dart';
+import 'package:task_manager/controllers/my_controller.dart';
 import 'package:task_manager/screens/add_member/add_members.dart';
-import 'package:task_manager/screens/my_categories/my_categories.dart';
 import 'package:task_manager/utils/constants.dart';
 import '../../utils/color.dart';
 import '../../utils/size_config.dart';
@@ -23,7 +22,7 @@ class _AddTaskState extends State<AddTask> {
 
   final format = DateFormat("dd-MM-yyyy HH:mm");
   bool setReminder = true;
-  String? selectedCategories;
+  Map? selectedCategories;
   TextEditingController title = TextEditingController();
   TextEditingController description = TextEditingController();
   TextEditingController date = TextEditingController();
@@ -36,21 +35,35 @@ class _AddTaskState extends State<AddTask> {
   @override
   void initState() {
     super.initState();
-    categories = List.from(Constants.appUser.myCategories);
-    categories.add("Other");
-    //AdsController().showInterstitialAd();
     getAllMembers();
   }
 
   void getAllMembers()async{
     allMembers.clear();
     EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-    dynamic result = await AppController().getAllMembers(allMembers);
+    dynamic result = await MyController().getMembers();
+    EasyLoading.dismiss();
+    if(result['Status'] == 'Success')
+    {
+      setState(() {
+        allMembers = result['Members'];
+        print(allMembers.length);
+      });
+    }
+
+    getAllCategories();
+  }
+
+  void getAllCategories()async{
+    categories.clear();
+    EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
+    dynamic result = await MyController().getAllCategories(categories);
     EasyLoading.dismiss();
     if(result['Status'] == 'Success')
     {
      setState(() {
-       print(allMembers.length);
+        categories = result['Categories'];
+        print(categories.length);
      });
     }
   }
@@ -72,7 +85,7 @@ class _AddTaskState extends State<AddTask> {
         reminder.text = "";
       
       EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-      dynamic result = await AppController().addTask(title.text, description.text, selectedCategories!, date.text, selectedMember, reminder.text);
+      dynamic result = await MyController().addTask(title.text, description.text, selectedCategories!, date.text, selectedMember, reminder.text);
       EasyLoading.dismiss();
       if(result['Status'] == 'Success')
       {
@@ -177,49 +190,7 @@ class _AddTaskState extends State<AddTask> {
                 ),
               
         
-                (Constants.appUser.myCategories.isEmpty) ? Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  margin: EdgeInsets.only(top : SizeConfig.blockSizeVertical*3),
-                  decoration: BoxDecoration(
-                    color: (description.text.isNotEmpty) ? Colors.transparent :Color(0XFFF4F4F6),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: (description.text.isNotEmpty) ? Constants.appThemeColor : Color(0xffEDEDFB),
-                      width: 1
-                    )
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Add category',
-                        style: TextStyle(
-                          fontSize: SizeConfig.fontSize * 2,
-                          color: Colors.black,
-                        ),
-                      ),
-                      
-                      GestureDetector(
-                        onTap: () async {
-                          dynamic result = await Get.to(const TaskCategories());
-                          if(result != null)
-                          {
-                            setState(() {
-                              selectedCategories = result;
-                              categories = List.from(Constants.appUser.myCategories);
-                              categories.add("Other");
-                            });
-                          }
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(left: 15),
-                          child: Icon(Icons.add_circle, color: appSecondaryColor, size: SizeConfig.blockSizeVertical *3.5,)
-                        ),
-                      ),
-                    ]
-                  ),
-                )
-                : Container(
+                Container(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   margin: EdgeInsets.only(top : SizeConfig.blockSizeVertical*3),
                   decoration: BoxDecoration(
@@ -231,40 +202,25 @@ class _AddTaskState extends State<AddTask> {
                     )
                   ),
                   child: Center(
-                    child: DropdownButton<dynamic>(
+                    child: DropdownButton<Map>(
                       isExpanded: true,
                       underline: Container(),
                       value: selectedCategories,
                       hint: Text('Task category', style: TextStyle(fontSize: SizeConfig.fontSize * 1.6),),
-                      style: TextStyle(fontSize: SizeConfig.fontSize * 2, color: Colors.white,),
+                      style: TextStyle(fontSize: SizeConfig.fontSize * 1.6, color: Colors.white,),
                       items: categories.map((dynamic value) {
-                        return DropdownMenuItem<dynamic>(
+                        return DropdownMenuItem<Map>(
                           value: value,
                           child: Text(
-                            value,
+                            value['name'],
                             style: TextStyle(fontSize: SizeConfig.fontSize * 1.6, color: Colors.black,),
                           ),
                         );
                       }).toList(),
                       onChanged: (_) async {
-                        if(_ != "Other")
-                        {
-                          setState(() {
-                            selectedCategories = _;                          
-                          });
-                        }
-                        else
-                        {
-                          dynamic result = await Get.to(const TaskCategories());
-                          if(result != null)
-                          {
-                            setState(() {
-                              selectedCategories = result;
-                              categories = List.from(Constants.appUser.myCategories);
-                              categories.add("Other");
-                            });
-                          }
-                        }
+                        setState(() {
+                          selectedCategories = _;                          
+                        });
                       },
                     )
                   ),
@@ -285,12 +241,16 @@ class _AddTaskState extends State<AddTask> {
                     child: DateTimeField(
                       format: format,
                       controller: date,
+                      style: TextStyle(fontSize: SizeConfig.fontSize * 1.6,),
                       resetIcon: const Icon(Icons.close, color: Colors.transparent,),
                       decoration: InputDecoration(
                         hintStyle: TextStyle(fontSize: SizeConfig.fontSize * 1.6,),
                         border: InputBorder.none,
                         hintText: 'Task date',
                       ),
+                      onChanged: (value) {
+                        setState(() {});
+                      },
                       onShowPicker: (context, currentValue) async {
                         final date = await showDatePicker(
                           context: context,
@@ -362,7 +322,7 @@ class _AddTaskState extends State<AddTask> {
                         return DropdownMenuItem<Map>(
                           value: value,
                           child: Text(
-                            value['memberName'],
+                            value['name'],
                             style: TextStyle(fontSize: SizeConfig.fontSize * 1.6, color: Colors.black,),
                           ),
                         );
@@ -430,12 +390,15 @@ class _AddTaskState extends State<AddTask> {
                       format: format,
                       controller: reminder,
                       resetIcon: const Icon(Icons.close, color: Colors.transparent,),
+                      style: TextStyle(fontSize: SizeConfig.fontSize * 1.6,),
                       decoration: InputDecoration(
                         hintStyle: TextStyle(fontSize: SizeConfig.fontSize * 1.6,),
                         border: InputBorder.none,
-                        hintText: 'Task reminder',
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0)
+                        hintText: 'Reminder date',
                       ),
+                      onChanged: (value) {
+                        setState(() {});
+                      },
                       onShowPicker: (context, currentValue) async {
                         final date = await showDatePicker(
                           context: context,

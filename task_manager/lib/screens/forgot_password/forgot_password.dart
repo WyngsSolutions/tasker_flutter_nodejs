@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/controllers/my_controller.dart';
 import 'package:task_manager/utils/constants.dart';
-import '../../controllers/app_controller.dart';
 import '../../utils/size_config.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -22,7 +22,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     super.initState();
   }
 
-  void signInPressed() async
+  void submitPressed() async
   {
     if(email.text.isEmpty)
       Constants.showDialog("Please enter email");
@@ -31,7 +31,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     else
     {
       EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-      dynamic result =  await AppController().forgotPassword(email.text);
+      dynamic result =  await MyController().forgotPassword(email.text);
       EasyLoading.dismiss();
       if(result['Status'] == 'Success'){
         Get.back();
@@ -103,8 +103,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             ),
 
 
-            Expanded(
-              child: Container(
+            Container(
                 margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical*18),
                 padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical*3.5, left: SizeConfig.blockSizeHorizontal*6, right: SizeConfig.blockSizeHorizontal*6, bottom: SizeConfig.blockSizeVertical*2),
                 decoration: BoxDecoration(
@@ -175,7 +174,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
 
                     GestureDetector(
-                      onTap: signInPressed,
+                      onTap: submitPressed,
                       child: Container(
                         margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical *4),
                         height: SizeConfig.blockSizeVertical*6.3,
@@ -199,7 +198,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   ],
                 ),
               ),
-            )
           ],
         ),
       ),

@@ -1,10 +1,8 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:task_manager/utils/color.dart';
 import 'package:task_manager/utils/constants.dart';
 import 'controllers/notification_service.dart';
 import 'screens/splash_screen/splash_screen.dart';
@@ -14,9 +12,6 @@ Future<void> main() async {
   await NotificationService().init(); // 
   NotificationService().requestIOSPermissions(); // 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await Firebase.initializeApp();
-  // MobileAds.instance.initialize();
-  // await AdsController().init(); // 
   runApp(const MyApp());
   configLoading();
 }

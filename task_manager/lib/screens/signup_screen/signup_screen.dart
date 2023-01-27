@@ -6,7 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../controllers/app_controller.dart';
+import 'package:task_manager/controllers/my_controller.dart';
 import '../../controllers/social_login_controller.dart';
 import '../../utils/constants.dart';
 import '../../utils/size_config.dart';
@@ -36,12 +36,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Constants.showDialog('Please enter a valid email address');
     else if(password.text.isEmpty)
       Constants.showDialog('Please enter password');
-    else if(password.text.length<8)
+    else if(password.text.length<6)
       Constants.showDialog('Password should be atleast 8 letters');
     else
     {
       EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black,);
-      dynamic result = await AppController().signUpUser(username.text, email.text, password.text,);
+      dynamic result = await MyController().signUpUser(username.text, email.text, password.text, false);
       EasyLoading.dismiss();
       if (result['Status'] == "Success") 
         Get.offAll(const NavigationView(defaultPage: 0,));
@@ -54,64 +54,66 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      body: Container(
-        child: Stack(
-          children: [
-            
-            Container(
-              height: SizeConfig.blockSizeVertical*22,
-              color: Constants.appThemeColor,
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical*7, left: SizeConfig.blockSizeHorizontal*5, right: SizeConfig.blockSizeHorizontal*5),
-                    height: SizeConfig.blockSizeVertical*6,
-                    color: Colors.transparent,
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: (){
-                            Get.back();
-                          },
-                          child: Container(
-                            height: SizeConfig.blockSizeVertical*3,
-                            width: SizeConfig.blockSizeVertical*3,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('assets/arrow_back.png'),
-                                fit: BoxFit.contain
-                              )
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*3),
-                            child: Text(
-                              'Sign Up',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: SizeConfig.fontSize*2.4
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Container(
+          child: Stack(
+            children: [
+              
+              Container(
+                height: SizeConfig.blockSizeVertical*22,
+                color: Constants.appThemeColor,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical*7, left: SizeConfig.blockSizeHorizontal*5, right: SizeConfig.blockSizeHorizontal*5),
+                      height: SizeConfig.blockSizeVertical*6,
+                      color: Colors.transparent,
+                      child: Row(
+                        children: [
+                          // GestureDetector(
+                          //   onTap: (){
+                          //     Get.back();
+                          //   },
+                          //   child: Container(
+                          //     height: SizeConfig.blockSizeVertical*3,
+                          //     width: SizeConfig.blockSizeVertical*3,
+                          //     decoration: const BoxDecoration(
+                          //       image: DecorationImage(
+                          //         image: AssetImage('assets/arrow_back.png'),
+                          //         fit: BoxFit.contain
+                          //       )
+                          //     ),
+                          //   ),
+                          // ),
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal*3),
+                              child: Text(
+                                'Sign Up',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: SizeConfig.fontSize*2.4
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          height: SizeConfig.blockSizeVertical *3,
-                          width: SizeConfig.blockSizeVertical *3,
-                        ),
-                      ],
+                          // Container(
+                          //   height: SizeConfig.blockSizeVertical *3,
+                          //   width: SizeConfig.blockSizeVertical *3,
+                          // ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              )
-            ),
-
-
-            Expanded(
-              child: Container(
+                  ],
+                )
+              ),
+      
+      
+              Container(
+                height: SizeConfig.blockSizeVertical*75,
                 margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical*18),
                 padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical*3.5, left: SizeConfig.blockSizeHorizontal*6, right: SizeConfig.blockSizeHorizontal*6, bottom: SizeConfig.blockSizeVertical*2),
                 decoration: BoxDecoration(
@@ -165,7 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
-
+      
                     //Email
                     Container(
                       margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
@@ -211,7 +213,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
-
+      
                     //Password
                     Container(
                       margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 2),
@@ -269,7 +271,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
-
+      
                     GestureDetector(
                       onTap: signUpPressed,
                       child: Container(
@@ -291,69 +293,69 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         )
                       ),
                     ),
-
-                    Container(
-                      margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 7),
-                      child: Text(
-                        'Or using other method',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: SizeConfig.fontSize*1.6,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[400]!
-                        ),
-                      ),
-                    ),
-
+      
+                    // Container(
+                    //   margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 7),
+                    //   child: Text(
+                    //     'Or using other method',
+                    //     textAlign: TextAlign.center,
+                    //     style: TextStyle(
+                    //       fontSize: SizeConfig.fontSize*1.6,
+                    //       fontWeight: FontWeight.w500,
+                    //       color: Colors.grey[400]!
+                    //     ),
+                    //   ),
+                    // ),
+      
                     // socialIcon('Sign Up With Google', 'assets/google.png'),
                     // SizedBox(height: SizeConfig.blockSizeVertical *2,),
                     // socialIcon('Sign Up With Facebook', 'assets/fb.png')
-                    Container(
-                      margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical* 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: (){
-                              SocialLoginController().googleSignIn();
-                            },
-                            child:  FaIcon(FontAwesomeIcons.google, size: SizeConfig.blockSizeVertical * 4, color: Constants.appThemeColor,)
-                          ),
-                          SizedBox(width: SizeConfig.blockSizeHorizontal * 6,),
-                          GestureDetector(
-                            onTap: (){
-                              SocialLoginController().signInWithFacebook();
-                            },
-                            child:  FaIcon(FontAwesomeIcons.facebook, size: SizeConfig.blockSizeVertical * 4, color: Constants.appThemeColor,)
-                          ),
-                          if(Platform.isIOS)            
-                          Container(
-                            margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 6, bottom: SizeConfig.blockSizeVertical*0.5),
-                            child: GestureDetector(
-                              onTap: (){
-                              SocialLoginController().signInApple();
-                            },
-                              child:  FaIcon(FontAwesomeIcons.apple, size: SizeConfig.blockSizeVertical * 5, color: Constants.appThemeColor,)
-                            ),
-                          ), 
-                          Container(
-                            margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 6,),
-                            child: GestureDetector(
-                              onTap: (){
-                                SocialLoginController().signInTwitter();
-                              },
-                              child:  FaIcon(FontAwesomeIcons.twitter, size: SizeConfig.blockSizeVertical * 4.5, color: Constants.appThemeColor,)
-                            ),
-                          ), 
-                        ],
-                      ),
-                    )
+                    // Container(
+                    //   margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical* 5),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       GestureDetector(
+                    //         onTap: (){
+                    //           SocialLoginController().googleSignIn();
+                    //         },
+                    //         child:  FaIcon(FontAwesomeIcons.google, size: SizeConfig.blockSizeVertical * 4, color: Constants.appThemeColor,)
+                    //       ),
+                    //       SizedBox(width: SizeConfig.blockSizeHorizontal * 6,),
+                    //       GestureDetector(
+                    //         onTap: (){
+                    //           SocialLoginController().signInWithFacebook();
+                    //         },
+                    //         child:  FaIcon(FontAwesomeIcons.facebook, size: SizeConfig.blockSizeVertical * 4, color: Constants.appThemeColor,)
+                    //       ),
+                    //       if(Platform.isIOS)            
+                    //       Container(
+                    //         margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 6, bottom: SizeConfig.blockSizeVertical*0.5),
+                    //         child: GestureDetector(
+                    //           onTap: (){
+                    //           SocialLoginController().signInApple();
+                    //         },
+                    //           child:  FaIcon(FontAwesomeIcons.apple, size: SizeConfig.blockSizeVertical * 5, color: Constants.appThemeColor,)
+                    //         ),
+                    //       ), 
+                    //       Container(
+                    //         margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 6,),
+                    //         child: GestureDetector(
+                    //           onTap: (){
+                    //             SocialLoginController().signInTwitter();
+                    //           },
+                    //           child:  FaIcon(FontAwesomeIcons.twitter, size: SizeConfig.blockSizeVertical * 4.5, color: Constants.appThemeColor,)
+                    //         ),
+                    //       ), 
+                    //     ],
+                    //   ),
+                    // )
                     
                   ],
                 ),
               ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Container(

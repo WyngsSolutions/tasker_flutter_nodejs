@@ -1,4 +1,4 @@
-package com.task.manager.app
+package com.kv.tasker.app
 
 import android.content.Context
 import android.view.LayoutInflater

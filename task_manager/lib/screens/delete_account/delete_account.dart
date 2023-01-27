@@ -1,14 +1,14 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, prefer_const_constructors, sized_box_for_whitespace, avoid_print
 //import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/screens/login_screen/login_screen.dart';
+import '../../controllers/my_controller.dart';
+import '../../models/app_user.dart';
 import '../../utils/constants.dart';
 import '../../utils/size_config.dart';
+import '../signup_screen/signup_screen.dart';
 
 class DeleteAccount extends StatefulWidget {
   const DeleteAccount({ Key? key }) : super(key: key);
@@ -20,49 +20,30 @@ class DeleteAccount extends StatefulWidget {
 class _DeleteAccountState extends State<DeleteAccount> {
   
   TextEditingController currentPassword = TextEditingController();   
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-  bool isVisible = true;
+ bool isVisible = true;
 
   @override
   void initState() {
     super.initState();
   }
 
-  Future<void> deleteAccount() async {
+  void deleteAccount()async{
     if(currentPassword.text.isEmpty)
-      Constants.showDialog('Enter your current password');
+      Constants.showDialog('Please enter your password');
     else
     {
-      EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black,);
-      await deleteUser();
+      EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
+      dynamic result = await MyController().deleteAccount(currentPassword.text);
       EasyLoading.dismiss();
+      if(result['Status'] == 'Success')
+      {
+        await AppUser.deleteUserAndOtherPreferences();
+        Get.offAll(SignUpScreen());
+        Constants.showDialog('Your account has been successfully deleted');
+      }
+      else
+        Constants.showDialog(result['ErrorMessage']);
     }
-  }
-
-  Future deleteUser() async {
-    try {
-      User user = _auth.currentUser!;
-      AuthCredential credentials = EmailAuthProvider.credential(email: Constants.appUser.email, password: currentPassword.text);
-      print(user);
-      UserCredential result = await user.reauthenticateWithCredential(credentials);
-      await deleteuser(result.user!.uid);
-      await result.user!.delete();
-      Get.offAll(LoginScreen());
-      Constants.showDialog("Your account has been deleted");
-      return true;
-    } 
-    on FirebaseAuthException catch (e) {
-      if(e.code.toString() == "wrong-password")
-        Constants.showDialog('Your entered password is wrong');
-    }
-    catch(e){
-      print(e.toString());
-    }
-  }
- 
-  Future deleteuser(String userId) {
-    return userCollection.doc(userId).delete();
   }
 
   @override

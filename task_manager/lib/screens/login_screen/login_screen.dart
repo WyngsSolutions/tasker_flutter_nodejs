@@ -6,11 +6,11 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:task_manager/controllers/my_controller.dart';
 import 'package:task_manager/controllers/social_login_controller.dart';
 import 'package:task_manager/screens/forgot_password/forgot_password.dart';
 import 'package:task_manager/screens/signup_screen/signup_screen.dart';
 import 'package:task_manager/utils/constants.dart';
-import '../../controllers/app_controller.dart';
 import '../../utils/size_config.dart';
 import '../navigation_view/navigation_view.dart';
 
@@ -40,12 +40,12 @@ class _LoginScreenState extends State<LoginScreen> {
       Constants.showDialog("Please enter valid email");
     else if(password.text.isEmpty)
       Constants.showDialog("Please enter password");
-    else if(password.text.length < 8)
+    else if(password.text.length < 6)
       Constants.showDialog("Password lenght should be atleast 8 characters");
     else
     {
       EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-      dynamic result =  await AppController().signInUser(email.text, password.text);
+      dynamic result =  await MyController().signInUser(email.text, password.text);
       EasyLoading.dismiss();
       if(result['Status'] == 'Success'){
         await Constants.appUser.saveUserDetails();
@@ -98,8 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
 
-            Expanded(
-              child: Container(
+            Container(
                 margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical*18),
                 padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical*3.5, left: SizeConfig.blockSizeHorizontal*6, right: SizeConfig.blockSizeHorizontal*6, bottom: SizeConfig.blockSizeVertical*2),
                 decoration: BoxDecoration(
@@ -254,67 +253,66 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    Container(
-                      margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 7),
-                      child: Text(
-                        'Or using other method',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: SizeConfig.fontSize*1.6,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[400]!
-                        ),
-                      ),
-                    ),
+                    // Container(
+                    //   margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 7),
+                    //   child: Text(
+                    //     'Or using other method',
+                    //     textAlign: TextAlign.center,
+                    //     style: TextStyle(
+                    //       fontSize: SizeConfig.fontSize*1.6,
+                    //       fontWeight: FontWeight.w500,
+                    //       color: Colors.grey[400]!
+                    //     ),
+                    //   ),
+                    // ),
 
-                    // socialIcon('Sign Up With Google', 'assets/google.png'),
-                    // SizedBox(height: SizeConfig.blockSizeVertical *2,),
-                    // socialIcon('Sign Up With Facebook', 'assets/fb.png')
-                    Container(
-                      margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical* 6),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: (){
-                              SocialLoginController().googleSignIn();
-                            },
-                            child:  FaIcon(FontAwesomeIcons.google, size: SizeConfig.blockSizeVertical * 4, color: Constants.appThemeColor,)
-                          ),
-                          SizedBox(width: SizeConfig.blockSizeHorizontal * 6,),
-                          GestureDetector(
-                            onTap: (){
-                              SocialLoginController().signInWithFacebook();
-                            },
-                            child:  FaIcon(FontAwesomeIcons.facebook, size: SizeConfig.blockSizeVertical * 4, color: Constants.appThemeColor,)
-                          ),
-                          if(Platform.isIOS)            
-                          Container(
-                            margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 6, bottom: SizeConfig.blockSizeVertical*0.5),
-                            child: GestureDetector(
-                              onTap: (){
-                              SocialLoginController().signInApple();
-                            },
-                              child:  FaIcon(FontAwesomeIcons.apple, size: SizeConfig.blockSizeVertical * 5, color: Constants.appThemeColor,)
-                            ),
-                          ), 
-                          Container(
-                            margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 6,),
-                            child: GestureDetector(
-                              onTap: (){
-                                SocialLoginController().signInTwitter();
-                              },
-                              child:  FaIcon(FontAwesomeIcons.twitter, size: SizeConfig.blockSizeVertical * 4.5, color: Constants.appThemeColor,)
-                            ),
-                          ), 
-                        ],
-                      ),
-                    )
-                    
-                  ],
-                ),
+                    // // socialIcon('Sign Up With Google', 'assets/google.png'),
+                    // // SizedBox(height: SizeConfig.blockSizeVertical *2,),
+                    // // socialIcon('Sign Up With Facebook', 'assets/fb.png')
+                    // Container(
+                    //   margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical* 6),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       GestureDetector(
+                    //         onTap: (){
+                    //           SocialLoginController().googleSignIn();
+                    //         },
+                    //         child:  FaIcon(FontAwesomeIcons.google, size: SizeConfig.blockSizeVertical * 4, color: Constants.appThemeColor,)
+                    //       ),
+                    //       SizedBox(width: SizeConfig.blockSizeHorizontal * 6,),
+                    //       GestureDetector(
+                    //         onTap: (){
+                    //           SocialLoginController().signInWithFacebook();
+                    //         },
+                    //         child:  FaIcon(FontAwesomeIcons.facebook, size: SizeConfig.blockSizeVertical * 4, color: Constants.appThemeColor,)
+                    //       ),
+                    //       if(Platform.isIOS)            
+                    //       Container(
+                    //         margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 6, bottom: SizeConfig.blockSizeVertical*0.5),
+                    //         child: GestureDetector(
+                    //           onTap: (){
+                    //           SocialLoginController().signInApple();
+                    //         },
+                    //           child:  FaIcon(FontAwesomeIcons.apple, size: SizeConfig.blockSizeVertical * 5, color: Constants.appThemeColor,)
+                    //         ),
+                    //       ), 
+                    //       Container(
+                    //         margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 6,),
+                    //         child: GestureDetector(
+                    //           onTap: (){
+                    //             SocialLoginController().signInTwitter();
+                    //           },
+                    //           child:  FaIcon(FontAwesomeIcons.twitter, size: SizeConfig.blockSizeVertical * 4.5, color: Constants.appThemeColor,)
+                    //         ),
+                    //       ), 
+                    //     ],
+                    //   ),
+                    // )
+                  
+                ],
               ),
-            )
+            ),
           ],
         ),
       ),

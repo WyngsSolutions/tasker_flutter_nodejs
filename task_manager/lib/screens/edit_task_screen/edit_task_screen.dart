@@ -5,12 +5,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:task_manager/controllers/app_controller.dart';
-import 'package:task_manager/screens/my_categories/my_categories.dart';
 import 'package:task_manager/utils/constants.dart';
+import '../../controllers/my_controller.dart';
 import '../../utils/color.dart';
 import '../../utils/size_config.dart';
-import '../add_member/add_members.dart';
 
 class EditTask extends StatefulWidget {
   
@@ -25,7 +23,7 @@ class _EditTaskState extends State<EditTask> {
   
   final format = DateFormat("dd-MM-yyyy HH:mm");
   bool setReminder = true;
-  String? selectedCategories;
+  Map? selectedCategories;
   TextEditingController title = TextEditingController();
   TextEditingController description = TextEditingController();
   TextEditingController date = TextEditingController();
@@ -38,28 +36,42 @@ class _EditTaskState extends State<EditTask> {
   @override
   void initState() {
     super.initState();
-    title.text = widget.taskDetail['taskTitle'];
-    description.text = widget.taskDetail['taskDescription'];
-    date.text = widget.taskDetail['taskDate'];
-    reminder.text = widget.taskDetail['taskReminder'];
-    categories = List.from(Constants.appUser.myCategories);
-    selectedCategories = categories.firstWhere((element) => element == widget.taskDetail['taskCategory'], orElse: () => null,);
-    categories.add("Other");
+    title.text = widget.taskDetail['title'];
+    description.text = widget.taskDetail['description'];
+    date.text = widget.taskDetail['date'];
+    reminder.text = widget.taskDetail['reminder'];
     getAllMembers();
   }
   
   void getAllMembers()async{
     allMembers.clear();
     EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-    dynamic result = await AppController().getAllMembers(allMembers);
+    dynamic result = await MyController().getMembers();
+    EasyLoading.dismiss();
+    if(result['Status'] == 'Success')
+    {
+      setState(() {
+        allMembers = result['Members'];
+        Map member = (widget.taskDetail['member'] == null) ? {} : widget.taskDetail['member'];
+        if(member.isNotEmpty)
+          selectedMember = allMembers.firstWhere((element) => element['_id'] == member['_id'], orElse: () => null,);
+      });
+    }
+    
+    getAllCategories();
+  }
+
+  void getAllCategories()async{
+    categories.clear();
+    EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
+    dynamic result = await MyController().getAllCategories(categories);
     EasyLoading.dismiss();
     if(result['Status'] == 'Success')
     {
      setState(() {
-        print(allMembers.length);
-        Map member = (widget.taskDetail['member'] == null) ? {} : widget.taskDetail['member'];
-        if(member.isNotEmpty)
-          selectedMember = allMembers.firstWhere((element) => element['memberId'] == member['memberId'], orElse: () => null,);
+        categories = result['Categories'];
+        print(categories.length);
+        selectedCategories = categories.firstWhere((element) => element['_id'] == widget.taskDetail['category'], orElse: () => null,);
      });
     }
   }
@@ -80,7 +92,7 @@ class _EditTaskState extends State<EditTask> {
       if(!setReminder)
         reminder.text = "";
       EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-      dynamic result = await AppController().editTask(widget.taskDetail, title.text, description.text, selectedCategories!, date.text, selectedMember, reminder.text);
+      dynamic result = await MyController().editTask(widget.taskDetail, title.text, description.text, selectedCategories!, date.text, selectedMember, reminder.text);
       EasyLoading.dismiss();
       if(result['Status'] == 'Success')
       {
@@ -96,7 +108,7 @@ class _EditTaskState extends State<EditTask> {
 
   void deleteTasks()async{
     EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-    dynamic result = await AppController().deleteTask(widget.taskDetail);
+    dynamic result = await MyController().deleteTask(widget.taskDetail);
     EasyLoading.dismiss();
     if(result['Status'] == 'Success')
     {
@@ -197,49 +209,7 @@ class _EditTaskState extends State<EditTask> {
                   ),
                 ),
               
-                (Constants.appUser.myCategories.isEmpty) ? Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  margin: EdgeInsets.only(top : SizeConfig.blockSizeVertical*3),
-                  decoration: BoxDecoration(
-                    color: (description.text.isNotEmpty) ? Colors.transparent :Color(0XFFF4F4F6),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: (description.text.isNotEmpty) ? Constants.appThemeColor : Color(0xffEDEDFB),
-                      width: 1
-                    )
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Add category',
-                        style: TextStyle(
-                          fontSize: SizeConfig.fontSize * 2,
-                          color: Colors.black,
-                        ),
-                      ),
-                      
-                      GestureDetector(
-                        onTap: () async {
-                          dynamic result = await Get.to(const TaskCategories());
-                          if(result != null)
-                          {
-                            setState(() {
-                              selectedCategories = result;
-                              categories = List.from(Constants.appUser.myCategories);
-                              categories.add("Other");
-                            });
-                          }
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(left: 15),
-                          child: Icon(Icons.add_circle, color: appSecondaryColor, size: SizeConfig.blockSizeVertical *3.5,)
-                        ),
-                      ),
-                    ]
-                  ),
-                )
-                : Container(
+                Container(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   margin: EdgeInsets.only(top : SizeConfig.blockSizeVertical*3),
                   decoration: BoxDecoration(
@@ -261,30 +231,15 @@ class _EditTaskState extends State<EditTask> {
                         return DropdownMenuItem<dynamic>(
                           value: value,
                           child: Text(
-                            value,
+                            value['name'],
                             style: TextStyle(fontSize: SizeConfig.fontSize * 1.6, color: Colors.black,),
                           ),
                         );
                       }).toList(),
                       onChanged: (_) async {
-                        if(_ != "Other")
-                        {
-                          setState(() {
-                            selectedCategories = _;                          
-                          });
-                        }
-                        else
-                        {
-                          dynamic result = await Get.to(const TaskCategories());
-                          if(result != null)
-                          {
-                            setState(() {
-                              selectedCategories = result;
-                              categories = List.from(Constants.appUser.myCategories);
-                              categories.add("Other");
-                            });
-                          }
-                        }
+                        setState(() {
+                          selectedCategories = _;                          
+                        });
                       },
                     )
                   ),
@@ -306,11 +261,15 @@ class _EditTaskState extends State<EditTask> {
                       format: format,
                       controller: date,
                       resetIcon: const Icon(Icons.close, color: Colors.transparent,),
+                      style: TextStyle(fontSize: SizeConfig.fontSize * 1.6,),
                       decoration: InputDecoration(
                         hintStyle: TextStyle(fontSize: SizeConfig.fontSize * 1.6,),
                         border: InputBorder.none,
                         hintText: 'Task date',
                       ),
+                      onChanged: (value) {
+                        setState(() {});
+                      },
                       onShowPicker: (context, currentValue) async {
                         final date = await showDatePicker(
                           context: context,
@@ -332,35 +291,7 @@ class _EditTaskState extends State<EditTask> {
                   ),
                 ),
 
-                (allMembers.isEmpty) ? Container(
-                  margin: EdgeInsets.only(top : SizeConfig.blockSizeVertical*3),
-                  //height: SizeConfig.blockSizeVertical * 7,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Task Members',
-                        style: TextStyle(
-                          fontSize: SizeConfig.fontSize * 2,
-                          color: Colors.black,
-                        ),
-                      ),
-                      
-                      GestureDetector(
-                        onTap: () async {
-                          dynamic result = await Get.to(const AddMemberScreen());
-                          if(result != null)
-                            getAllMembers();
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(left: 15),
-                          child: Icon(Icons.add_circle, color: appSecondaryColor, size: SizeConfig.blockSizeVertical *3.5,)
-                        ),
-                      ),
-                    ]
-                  ),
-                )
-                : Container(
+                Container(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   margin: EdgeInsets.only(top : SizeConfig.blockSizeVertical*3),
                   decoration: BoxDecoration(
@@ -382,7 +313,7 @@ class _EditTaskState extends State<EditTask> {
                         return DropdownMenuItem<Map>(
                           value: value,
                           child: Text(
-                            value['memberName'],
+                            value['name'],
                             style: TextStyle(fontSize: SizeConfig.fontSize * 1.6, color: Colors.black,),
                           ),
                         );
@@ -450,12 +381,15 @@ class _EditTaskState extends State<EditTask> {
                       format: format,
                       controller: reminder,
                       resetIcon: const Icon(Icons.close, color: Colors.transparent,),
+                      style: TextStyle(fontSize: SizeConfig.fontSize * 1.6,),
                       decoration: InputDecoration(
                         hintStyle: TextStyle(fontSize: SizeConfig.fontSize * 1.6,),
                         border: InputBorder.none,
-                        hintText: 'Task reminder',
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0)
+                        hintText: 'Task date',
                       ),
+                      onChanged: (value) {
+                        setState(() {});
+                      },
                       onShowPicker: (context, currentValue) async {
                         final date = await showDatePicker(
                           context: context,

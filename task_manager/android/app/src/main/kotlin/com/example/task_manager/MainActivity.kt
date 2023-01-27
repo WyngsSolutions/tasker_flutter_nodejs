@@ -1,4 +1,4 @@
-package com.task.manager.app
+package com.kv.tasker.app
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine

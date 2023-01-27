@@ -3,6 +3,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/controllers/my_controller.dart';
 import 'package:task_manager/models/app_user.dart';
 import '../../utils/color.dart';
 import '../../utils/constants.dart';
@@ -19,12 +20,26 @@ class _TaskCategoriesState extends State<TaskCategories> {
 
   Color oddColor = Color(0XFFbddae6);
   Color evenColor = Color(0XFFcfe0b1);
-  List allCategories = [];
+  List categories = [];
 
   @override
   void initState() {
     super.initState();
-    allCategories = List.from(Constants.appUser.myCategories);
+    getAllCategories();
+  }
+
+  void getAllCategories()async{
+    categories.clear();
+    EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
+    dynamic result = await MyController().getAllCategories(categories);
+    EasyLoading.dismiss();
+    if(result['Status'] == 'Success')
+    {
+     setState(() {
+        categories = result['Categories'];
+        print(categories.length);
+     });
+    }
   }
 
   void showAddCategoryView() {
@@ -110,18 +125,17 @@ class _TaskCategoriesState extends State<TaskCategories> {
   }  
 
   void addCategory(String category)async{
-    allCategories.add(category);
     EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-    dynamic result = await AppUser.updateUserProfile(Constants.appUser.name, Constants.appUser.userProfilePicture, allCategories);
+    dynamic result = await MyController().addCategory(category);
     EasyLoading.dismiss();
-    if(result)
+    if(result['Status'] == 'Success')
     {
       print('Category Added');
-      Constants.appUser.myCategories = List.from(allCategories);
+      getAllCategories();
     }
     else
     {
-      allCategories.removeLast();
+      categories.removeLast();
       Constants.showDialog(result['ErrorMessage']);
     }
 
@@ -129,18 +143,16 @@ class _TaskCategoriesState extends State<TaskCategories> {
   }
 
   void deleteCategory(int index)async{
-    allCategories.removeAt(index);
     EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-    dynamic result = await AppUser.updateUserProfile(Constants.appUser.name, Constants.appUser.userProfilePicture, allCategories);
+    dynamic result = await MyController().deleteCategory(categories[index]);
     EasyLoading.dismiss();
-    if(result)
+    if(result['Status'] == 'Success')
     {
       print('Category deleted');
-      Constants.appUser.myCategories = List.from(allCategories);
+      getAllCategories();
     }
     else
     {
-      allCategories.removeLast();
       Constants.showDialog(result['ErrorMessage']);
     }
 
@@ -177,13 +189,13 @@ class _TaskCategoriesState extends State<TaskCategories> {
                 margin: EdgeInsets.fromLTRB(SizeConfig.blockSizeHorizontal*5, 0, SizeConfig.blockSizeHorizontal*5, 10),
                 child: ListView.builder(
                   itemBuilder: (_, i) {
-                    if(i < allCategories.length)
+                    if(i < categories.length)
                       return categoryCell(i);
                     else
                       return categoryAddCell();
                   },
                   shrinkWrap: true,
-                  itemCount: allCategories.length + 1,
+                  itemCount: categories.length + 1,
                 ),
               ),
             ),
@@ -217,7 +229,7 @@ class _TaskCategoriesState extends State<TaskCategories> {
   Widget categoryCell(int index){
     return GestureDetector(
       onTap: (){
-        Get.back(result: allCategories[index]);
+        Get.back(result: categories[index]);
       },
       child: Container(
         margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical*3),  
@@ -236,7 +248,7 @@ class _TaskCategoriesState extends State<TaskCategories> {
           children: [
             Flexible(
               child: Text(
-                '${allCategories[index]}',
+                '${categories[index]['name']}',
                 style: TextStyle(
                   fontSize: SizeConfig.fontSize * 1.9,
                   color: appPrimaryColor,

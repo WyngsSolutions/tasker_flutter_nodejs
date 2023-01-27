@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:374411072723:android:062a1b6e97cf7b374db026",
         "android_client_info": {
-          "package_name": "com.task.manager.app"
+          "package_name": "com.kv.tasker.app"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "374411072723-lflh7ihq5df87urhgmjp6boe7hmr42eb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.task.manager.app",
+            "package_name": "com.kv.tasker.app",
             "certificate_hash": "449a8cec9b7c82307f5c7aaf1423cb7321d0825a"
           }
         },
@@ -42,7 +42,7 @@
               "client_id": "374411072723-a9cird6fsn1b2isrrgbnej6i9pr8v5fb.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.task.manager.app"
+                "bundle_id": "com.kv.tasker.app"
               }
             }
           ]

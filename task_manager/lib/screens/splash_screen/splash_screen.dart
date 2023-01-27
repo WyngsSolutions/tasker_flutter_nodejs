@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Get.offAll(const LoginScreen(),);
     else
     {
-      Constants.appUser = await AppUser.getUserDetailByUserId(Constants.appUser.userId);
+      //Constants.appUser = await AppUser.getUserDetailByUserId(Constants.appUser.userId);
       Get.offAll(const NavigationView(defaultPage: 0,),);
     }
   }

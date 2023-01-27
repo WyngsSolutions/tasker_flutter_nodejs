@@ -6,14 +6,11 @@ import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:task_manager/screens/edit_task_screen/edit_task_screen.dart';
-import '../../controllers/app_controller.dart';
+import '../../controllers/my_controller.dart';
 import '../../utils/color.dart';
 import '../../utils/constants.dart';
 import '../../utils/size_config.dart';
 import '../add_member/add_members.dart';
-import '../add_task_screen/add_task_screen.dart';
 import '../edit_member/edit_member.dart';
 
 class TeamMembers extends StatefulWidget {
@@ -35,12 +32,13 @@ class _TeamMembersState extends State<TeamMembers> {
   void getAllMembers()async{
     allMembers.clear();
     EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-    dynamic result = await AppController().getAllMembers(allMembers);
+    dynamic result = await MyController().getMembers();
     EasyLoading.dismiss();
     if(result['Status'] == 'Success')
     {
      setState(() {
-       print(allMembers.length);
+        allMembers = result['Members'];
+        print(allMembers.length);
      });
     }
     else
@@ -49,9 +47,9 @@ class _TeamMembersState extends State<TeamMembers> {
     }
   }
 
-  void deleteTasks(Map memberDetail, int index)async{
+  void deleteMember(Map memberDetail, int index)async{
     EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
-    dynamic result = await AppController().deleteMember(memberDetail);
+    dynamic result = await MyController().deleteMember(memberDetail);
     EasyLoading.dismiss();
     if(result['Status'] == 'Success')
     {
@@ -159,7 +157,7 @@ class _TeamMembersState extends State<TeamMembers> {
               color: Colors.grey[300],
               shape: BoxShape.circle,
               image: DecorationImage(
-                image: (memberDetail['memberPhoto'] =="") ? AssetImage('assets/user.png') : CachedNetworkImageProvider(memberDetail['memberPhoto']) as ImageProvider,
+                image: (memberDetail['avatar'] =="") ? AssetImage('assets/user.png') : CachedNetworkImageProvider(memberDetail['avatar']) as ImageProvider,
                 fit: BoxFit.cover
               ),
             ),
@@ -175,7 +173,7 @@ class _TeamMembersState extends State<TeamMembers> {
                     children: [
                       Flexible(
                         child: Text(
-                          '${memberDetail['memberName']}',
+                          '${memberDetail['name']}',
                           style: TextStyle(
                             fontSize: SizeConfig.fontSize * 1.8,
                             color: Constants.appThemeColor,
@@ -211,7 +209,7 @@ class _TeamMembersState extends State<TeamMembers> {
                             title: Text("Delete", style: TextStyle(color: appPrimaryColor),),
                             trailingIcon: Icon(Icons.delete, color: appPrimaryColor),
                             onPressed: (){
-                              deleteTasks(memberDetail, index);
+                              deleteMember(memberDetail, index);
                             }
                           ),
                         ],
@@ -227,7 +225,7 @@ class _TeamMembersState extends State<TeamMembers> {
                 Container(
                   margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 0),
                   child: Text(
-                    '${memberDetail['memberEmail']}',
+                    '${memberDetail['email']}',
                     style: TextStyle(
                       fontSize: SizeConfig.fontSize * 1.6,
                       color: Colors.grey[500],

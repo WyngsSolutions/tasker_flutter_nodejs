@@ -33,7 +33,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     filteredTasks.clear();
     for(int i=0; i< widget.allTasks.length; i++)
     {
-      DateTime taskDate = DateFormat("dd-MM-yyyy HH:mm").parse(widget.allTasks[i]['taskDate'].toString());
+      DateTime taskDate = DateFormat("dd-MM-yyyy HH:mm").parse(widget.allTasks[i]['date'].toString());
       if(taskDate.day == _selectedDay.day && taskDate.month == _selectedDay.month && taskDate.year == _selectedDay.year) {
         setState(() {
           filteredTasks.add(widget.allTasks[i]);          
@@ -139,7 +139,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget taskCell(Map taskDetail, int index){
-    DateTime taskDate = DateFormat("dd-MM-yyyy HH:mm").parse(taskDetail['taskDate'].toString());
+    DateTime taskDate = DateFormat("dd-MM-yyyy HH:mm").parse(taskDetail['date'].toString());
     String timeOnly = DateFormat("HH:mm aa").format(taskDate);
     String dateOnly = DateFormat("dd MMM, yyyy").format(taskDate);
     return Container(
@@ -170,7 +170,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               children: [
                 Flexible(
                   child: Text(
-                    '${taskDetail['taskTitle']}',
+                    '${taskDetail['title']}',
                     style: TextStyle(
                       fontSize: SizeConfig.fontSize * 2,
                       color: appPrimaryColor,
@@ -222,7 +222,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           Container(
             margin: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 0),
             child: Text(
-              '${taskDetail['taskDescription']}',
+              '${taskDetail['description']}',
               style: TextStyle(
                 fontSize: SizeConfig.fontSize * 1.6,
                 color: Colors.grey[500],

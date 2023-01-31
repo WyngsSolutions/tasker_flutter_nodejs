@@ -376,18 +376,16 @@ class MyController {
       request.headers.addAll(headers);
       if(memberPicture != null)
         request.files.add(new MultipartFile.fromBytes('avatar', await File.fromUri(memberPicture.uri).readAsBytes(),filename: basename(memberPicture.path), contentType: new MediaType('image', 'jpeg')));
-      else
-        request.files.add(new MultipartFile.fromBytes('avatar', [] ,filename: '', contentType: new MediaType('image', 'jpeg')));
+      // else
+      //   request.files.add(new MultipartFile.fromBytes('avatar', [] ,filename: '', contentType: new MediaType('image', 'jpeg')));
 
       dynamic response = await request.send();
       String responseData = await utf8.decoder.bind(response.stream).join();
       dynamic data = jsonDecode(responseData);
       if(response.statusCode == 200)
       {
-        dynamic data = jsonDecode(response.body);
         Map finalResponse = <dynamic, dynamic>{}; //empty map
         finalResponse['Status'] = "Success";
-        finalResponse['Members'] = data['members'];
         return finalResponse;
       } 
       else 

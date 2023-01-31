@@ -80,20 +80,20 @@ class _EditProfileState extends State<EditProfile> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(bottom: SizeConfig.blockSizeVertical*0.5),
-                      height: SizeConfig.blockSizeVertical *4,
-                      width: SizeConfig.blockSizeVertical *4,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Constants.appThemeColor,
-                      ),
-                      child: Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: SizeConfig.blockSizeVertical *2.3,
-                      ),
-                    ),
+                    // Container(
+                    //   margin: EdgeInsets.only(bottom: SizeConfig.blockSizeVertical*0.5),
+                    //   height: SizeConfig.blockSizeVertical *4,
+                    //   width: SizeConfig.blockSizeVertical *4,
+                    //   decoration: BoxDecoration(
+                    //     shape: BoxShape.circle,
+                    //     color: Constants.appThemeColor,
+                    //   ),
+                    //   child: Icon(
+                    //     Icons.edit,
+                    //     color: Colors.white,
+                    //     size: SizeConfig.blockSizeVertical *2.3,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -208,7 +208,7 @@ class _EditProfileState extends State<EditProfile> {
           ),
           child: Center(
             child: Text(
-              'Save Changes',
+              'Back',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: SizeConfig.fontSize*1.7,

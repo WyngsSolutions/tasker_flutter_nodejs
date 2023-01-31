@@ -47,6 +47,8 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
       Constants.showDialog('Please enter member name');
     else if(email.text.isEmpty)
       Constants.showDialog('Please enter member email');
+    else if(image == null)
+      Constants.showDialog('Please set member photo');
     else
     { 
       EasyLoading.show(status: 'Please wait', maskType: EasyLoadingMaskType.black);
